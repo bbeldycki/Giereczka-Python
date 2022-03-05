@@ -1,6 +1,7 @@
 import socket
 import threading
 import pickle
+from client.server_validate_position import *
 import sys
 
 header = 64
@@ -37,9 +38,16 @@ def handle_client_pickle(connection, address):
         msg_received = connection.recv(1024)
         if msg_received:
             msg = pickle.loads(msg_received)
+            print(f'[{address}] {msg}')
             if msg.get('disconnects', False):
                 connected = False
-            print(f'[{address}] {msg}')
+            if msg.get('actual_player_position', [0, 0]) and msg.get('next_player_position', [0, 0]):
+                if can_move_there(msg.get('next_player_position', [0, 0])):
+                    return_value = msg.get('next_player_position', [0, 0])
+                    connection.send(pickle.dumps(return_value))
+                else:
+                    return_value = msg.get('next_player_position', [0, 0])
+                    connection.send(pickle.dumps(return_value))
             connection.send(pickle.dumps('Message received!'))
     connection.close()
 
