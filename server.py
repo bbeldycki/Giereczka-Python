@@ -48,7 +48,7 @@ def handle_client_pickle(connection, address):
                 else:
                     return_value = msg.get('next_player_position', [0, 0])
                     connection.send(pickle.dumps(return_value))
-            connection.send(pickle.dumps('Message received!'))
+            # connection.send(pickle.dumps('Message received!'))
     connection.close()
 
 

@@ -40,8 +40,8 @@ class Game:
                 'next_player_position': player_next_pos
             }
             send_pickle(player_position)
-            # server_msg = pickle.loads(client.recv(1024))
-            # print(server_msg)
+            server_msg = pickle.loads(client.recv(1024))
+            self.level.player.actual_position = server_msg
             # print(player_input)
             # self.clock.tick_busy_loop(fps)
 
@@ -49,7 +49,7 @@ class Game:
 def send_pickle(message):
     msg = pickle.dumps(message)
     client.send(msg)
-    print(pickle.loads(client.recv(1024)))
+    # print(pickle.loads(client.recv(1024)))
 
 
 if __name__ == '__main__':

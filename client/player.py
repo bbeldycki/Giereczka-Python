@@ -21,7 +21,7 @@ class Player(Entity):
 
         # player position and direction when appear on screen
         self.actual_position = list(position)
-        self.next_position = [0, 0]
+        self.next_position = self.actual_position
         self.image = self.animations[self.facing_direction + '_idle'][0]
         self.rect = self.image.get_rect(topleft=self.actual_position)
 
