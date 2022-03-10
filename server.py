@@ -17,7 +17,8 @@ import sys
 # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # s.bind(addr)
 SERVER_TIMEOUT = 0.001
-
+SERVER_IP = '127.0.0.1'
+SERVER_PORT = 5050
 
 # def handle_client(connection, address):
 #     print(f'[NEW CONNECTION] {address} connected.')
@@ -139,7 +140,9 @@ class MyServer:
             if not ready_sockets:
                 connection.send(pickle.dumps(status))
                 continue
-
+            # response format:
+            # for commands: {'action': 'commands', 'value': {'commands': ...}}
+            # for errors: {'action': 'error', 'value': {'error': ...}}
             try:
                 response = pickle.loads(connection.recv(self.header))
                 handler = getattr(self.response_handler, f'handle_{response["action"]}', None)
@@ -166,7 +169,7 @@ class MyServer:
 
 
 def main() -> None:
-    server = MyServer()
+    server = MyServer(SERVER_IP, SERVER_PORT, ResponseHandler())
     server.run()
 
 

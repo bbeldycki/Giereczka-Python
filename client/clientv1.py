@@ -23,7 +23,7 @@ class Game:
 
     def run(self):
         while True:
-            dt = self.clock.tick_busy_loop(60) * 0.001 * fps
+            # dt = self.clock.tick_busy_loop(60) * 0.001 * fps
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -43,7 +43,7 @@ class Game:
             server_msg = pickle.loads(client.recv(1024))
             self.level.player.actual_position = server_msg
             # print(player_input)
-            # self.clock.tick_busy_loop(fps)
+            self.clock.tick_busy_loop(fps)
 
 
 def send_pickle(message):
