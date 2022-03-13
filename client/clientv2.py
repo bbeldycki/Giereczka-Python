@@ -4,13 +4,7 @@ import socket
 import traceback
 import sys
 import pygame
-
-SERVER_IP = '127.0.0.1'
-SERVER_PORT = 5050
-CLIENT_TIMEOUT = 0.001
-
-WIDTH = 800
-HEIGHT = 600
+from settings import *
 
 
 class Game:
@@ -22,18 +16,30 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('My Game')
         self.clock = pygame.time.Clock()
+        self.id = None
 
     def run(self) -> None:
         while True:
             ready_socket, _, _ = select.select([self.server], [], [], CLIENT_TIMEOUT)
             try:
                 if ready_socket:
-                    try:
-                        data = pickle.loads(self.server.recv(self.header))
-                    except:
-                        continue
+                    data = pickle.loads(self.server.recv(self.header))
 
-                    print(data)
+                    if self.id is None and isinstance(data, dict):
+                        self.id = data['players'][0]['id']
+                        print(f'id: {self.id}')
+
+                    while True:
+                        self.clock.tick_busy_loop(FPS)
+                        response = {'commands': [], 'id': self.id}
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                response['commands'].append({'quit_game': {'quit_game': True, 'id': self.id}})
+                                print(response)
+                                self.server.send(pickle.dumps({'action': 'commands', 'value': response}))
+                                pygame.quit()
+                                sys.exit()
+
             except Exception as e:
                 print('global error: ' + str(e))
                 self.server.send(pickle.dumps({'action': 'error', 'value': {'error': e}}))
