@@ -13,7 +13,11 @@ FPS = 60
 def initialize_stats(**kwargs) -> Dict[str, Any]:
     stats = {
         'alive': True,
-        'moving': False
+        'moving': False,
+        'move_speed': 8,
+        'animating': False,
+        'foreground_location': {'default': [(0, 0)]},
+        'foreground_index': -1
     }
 
     for arg in kwargs:
