@@ -3,42 +3,39 @@ import pygame
 
 
 class EntitySprite(pygame.sprite.Sprite):
-    def __init__(self, entity, color=(0, 255, 0)):
+    def __init__(self, entity, color=(0, 255, 0)) -> None:
         pygame.sprite.Sprite.__init__(self)
         self.entity = entity
+        self.color = color
         self.id = self.entity['id']
         self.position = self.entity['position']
-        self.speed = pygame.math.Vector2()
         self.direction = self.entity['direction']
         self.stats = self.entity['stats']
-
-        self.image = pygame.Surface((64, 64))
-        self.foreground = None
-        self.color = color
-        self.rect = self.image.get_rect()
+        self.frame_index = 0  # TODO change in the future
+        self.animation_speed = 0.2  # TODO change in the future
 
         self.rect.centerx = self.position[0]
         self.rect.centery = self.position[1]
 
-    def update(self):
+    def move(self, speed) -> None:
         # Movement
-        if self.speed != (0, 0):
+        if speed != (0, 0):
             self.stats['moving'] = True
 
-            new_position = (self.entity['position'][0] + self.speed[0],
-                            self.entity['position'][1] + self.speed[1])
+            new_position = (self.entity['position'][0] + speed[0],
+                            self.entity['position'][1] + speed[1])
 
             self.entity['position'] = new_position
 
-            if self.speed[0] > 0:
-                self.entity['direction'][0] = 1
+            if speed[0] > 0:
+                self.entity['direction'] = 'right'
             else:
-                self.entity['direction'][0] = -1
+                self.entity['direction'] = 'left'
 
-            if self.speed[1] > 0:
-                self.entity['direction'][1] = 1
+            if speed[1] > 0:
+                self.entity['direction'] = 'down'
             else:
-                self.entity['direction'][1] = -1
+                self.entity['direction'] = 'up'
         else:
             self.stats['moving'] = False
 
