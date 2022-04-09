@@ -4,7 +4,7 @@ from settings import *
 
 
 class Player(EntitySprite):
-    def __init__(self, entity, color=(0, 0, 255)):
+    def __init__(self, entity, color=(0, 0, 255)) -> None:
         super().__init__(entity=entity, color=color)
         self.animations = {
             'up': [],
@@ -20,9 +20,8 @@ class Player(EntitySprite):
 
         # player position and direction when appear on screen
         self.position = self.entity['position']
-        self.speed = self.entity.stats['movement_speed']
-        self.facing_direction = self.entity['direction']
-        self.image = self.animations[self.facing_direction + '_idle'][0]
+        self.speed = self.entity['stats']['movement_speed']
+        self.image = self.animations[self.direction + '_idle'][0]
         self.rect = self.image.get_rect(topleft=self.position)
 
     def import_player_assets(self) -> None:
@@ -42,34 +41,28 @@ class Player(EntitySprite):
         # all keys that we can get
         keys = pygame.key.get_pressed()
 
-        if self.direction.x == 0 and self.direction.y == 0:
-            self.stats['moving'] = False
         # movement input
         if keys[pygame.K_UP]:
-            self.direction.y = -1
-            self.facing_direction = 'up'
+            self.direction = 'up'
+            self.entity['direction'] = 'up'
             check_if_moving_or_changing_direction()
         elif keys[pygame.K_DOWN]:
-            self.direction.y = 1
-            self.facing_direction = 'down'
+            self.direction = 'down'
+            self.entity['direction'] = 'down'
             check_if_moving_or_changing_direction()
-        else:
-            self.direction.y = 0
 
         if keys[pygame.K_LEFT]:
-            self.direction.x = -1
-            self.facing_direction = 'left'
+            self.direction = 'left'
+            self.entity['direction'] = 'left'
             check_if_moving_or_changing_direction()
         elif keys[pygame.K_RIGHT]:
-            self.direction.x = 1
-            self.facing_direction = 'right'
+            self.direction = 'right'
+            self.entity['direction'] = 'right'
             check_if_moving_or_changing_direction()
-        else:
-            self.direction.x = 0
 
     def animate(self) -> None:
-        if self.entity['moving']:
-            animation = self.animations[self.facing_direction]
+        if self.stats['moving']:
+            animation = self.animations[self.direction]
             # loop over frame index
             self.frame_index += self.animation_speed
             if self.frame_index >= len(animation):
@@ -78,12 +71,13 @@ class Player(EntitySprite):
             # self.image = pygame.transform.rotozoom(animation[int(self.frame_index)], 0, 2)
             self.rect = self.image.get_rect(center=self.rect.center)
         else:
-            animation = self.animations[self.facing_direction + '_idle']
+            animation = self.animations[self.direction + '_idle']
             self.image = animation[0]
             # self.image = pygame.transform.rotozoom(animation[0], 0, 2)
             self.rect = self.image.get_rect(center=self.rect.center)
 
     def update(self) -> None:
         self.input()
+        print(self.direction)
         self.animate()
         self.move(self.speed)

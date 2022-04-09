@@ -26,14 +26,25 @@ class Game:
             ready_socket, _, _ = select.select([self.server], [], [], CLIENT_TIMEOUT)
             try:
                 if ready_socket:
-                    data = pickle.loads(self.server.recv(self.header))
+                    try:
+                        data = pickle.loads(self.server.recv(self.header))
+                        print(f'receiving data from server: ')
+                        print(data)
+                    except:
+                        continue
 
-                    if self.id is not None and isinstance(data, dict):
+                    if self.id is None and isinstance(data, dict):
                         self.id = data['players'][0]['id']
+                        print(f'new id: ' + str(self.id))
+                        continue
+                    elif self.id is not None and not isinstance(data, dict):
+                        print(f'data is not a dictionary')
+                        continue
+                    elif self.id is not None and isinstance(data, dict):
                         players = pygame.sprite.Group()
                         self.all_sprites = pygame.sprite.Group()
-                        print(f'id: {self.id}')
                         for player_entity in data['players']:
+                            print(player_entity)
                             if player_entity['id'] == self.id:
                                 color = (128, 0, 255)
                             else:

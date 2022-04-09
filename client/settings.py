@@ -12,6 +12,7 @@ CLIENT_TIMEOUT = 0.001
 WIDTH = 800
 HEIGHT = 600
 FPS = 60
+SIZE = 32
 
 
 # utility functions
@@ -20,9 +21,7 @@ def initialize_stats(**kwargs) -> Dict[str, Any]:
         'alive': True,
         'moving': False,
         'movement_speed': 10,
-        'animating': False,
-        'foreground_location': {'default': [(0, 0)]},
-        'foreground_index': -1
+        'animating': False
     }
 
     for arg in kwargs:

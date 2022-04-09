@@ -6,6 +6,7 @@ import time
 from client.settings import *
 from typing import Dict, Any
 import sys
+import traceback
 
 
 class ResponseHandler:
@@ -24,8 +25,9 @@ class ResponseHandler:
     def _handle_movement(status: Dict[str, Any], command: Dict[str, Any]) -> Dict[str, Any]:
         for player in status['players']:
             if player['id'] == command['id']:
-                player['pos'] = command['pos']
-                player['dir'] = command['dir']
+                player['stats']['moving'] = command['stats']['moving']
+                player['position'] = command['position']
+                player['direction'] = command['direction']
         return status
 
     @staticmethod
@@ -50,8 +52,9 @@ class MyServer:
             self.server.bind((host, port))
             self.server.listen()
             self.server.settimeout(5.0)
-        except Exception as error:
-            print(f'[ERROR IN CREATING SERVER] {error}')
+        except Exception:
+            print(f'[ERROR IN CREATING SERVER]')
+            traceback.print_exc()
             sys.exit()
         else:
             print(f'[SERVER IS LISTENING] @ {host}:{port}')
@@ -90,9 +93,16 @@ class MyServer:
             # for errors: {'action': 'error', 'value': {'error': ...}}
             try:
                 response = pickle.loads(connection.recv(self.header))
+                print('response: ')
+                print(response)
                 handler = getattr(self.response_handler, f'handle_{response["action"]}', None)
+                print('handler: ')
+                print(handler)
                 if callable(handler):
                     status = handler(status, response['value'])
+                    print('status: ')
+                    print(status)
+                    # if status.get('quit_game', False):
                     if status['quit_game']:
                         self._client_disconnected(address, time.time())
                         break
@@ -100,8 +110,9 @@ class MyServer:
                         connection.send(pickle.dumps(status))
                 else:
                     print(f'NO HANDLER FOR {response["action"]}')
-            except Exception as e:
-                print(f'[EXCEPTION] {e}')
+            except Exception:
+                print(f'[EXCEPTION]')
+                traceback.print_exc()
                 break
 
     @staticmethod
@@ -110,8 +121,8 @@ class MyServer:
         self.status['players'].append(
             {
                 'id': str(self.__total_player_count),
-                'pos': (WIDTH / 2, HEIGHT / 2),
-                'dir': 1,
+                'position': [WIDTH / 2, HEIGHT / 2],
+                'direction': 'down',
                 'stats': initialize_stats()
             }
         )

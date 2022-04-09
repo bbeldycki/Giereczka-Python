@@ -14,30 +14,22 @@ class EntitySprite(pygame.sprite.Sprite):
         self.frame_index = 0  # TODO change in the future
         self.animation_speed = 0.2  # TODO change in the future
 
+        self.image = pygame.Surface((SIZE, SIZE))
+        self.rect = self.image.get_rect()
         self.rect.centerx = self.position[0]
         self.rect.centery = self.position[1]
 
     def move(self, speed) -> None:
         # Movement
-        if speed != (0, 0):
-            self.stats['moving'] = True
-
-            new_position = (self.entity['position'][0] + speed[0],
-                            self.entity['position'][1] + speed[1])
-
-            self.entity['position'] = new_position
-
-            if speed[0] > 0:
-                self.entity['direction'] = 'right'
-            else:
-                self.entity['direction'] = 'left'
-
-            if speed[1] > 0:
-                self.entity['direction'] = 'down'
-            else:
-                self.entity['direction'] = 'up'
-        else:
-            self.stats['moving'] = False
+        if self.stats['moving']:
+            if self.direction == 'down':
+                self.entity['position'][1] = self.entity['position'][1] + speed
+            elif self.direction == 'up':
+                self.entity['position'][1] = self.entity['position'][1] - speed
+            if self.direction == 'right':
+                self.entity['position'][0] = self.entity['position'][0] + speed
+            elif self.direction == 'left':
+                self.entity['position'][0] = self.entity['position'][0] - speed
 
         self.rect.x = self.entity['position'][0]
         self.rect.y = self.entity['position'][1]
