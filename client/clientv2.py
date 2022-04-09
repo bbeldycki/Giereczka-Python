@@ -28,7 +28,7 @@ class Game:
                 if ready_socket:
                     data = pickle.loads(self.server.recv(self.header))
 
-                    if self.id is None and isinstance(data, dict):
+                    if self.id is not None and isinstance(data, dict):
                         self.id = data['players'][0]['id']
                         players = pygame.sprite.Group()
                         self.all_sprites = pygame.sprite.Group()
